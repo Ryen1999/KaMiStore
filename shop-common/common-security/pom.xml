@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.shop</groupId>
+        <artifactId>shop-common</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>common-security</artifactId>
+    <name>common-security</name>
+    <description>公共安全模块 - Sa-Token配置、权限注解、Token工具</description>
+
+    <dependencies>
+        <!-- common-core -->
+        <dependency>
+            <groupId>com.shop</groupId>
+            <artifactId>common-core</artifactId>
+        </dependency>
+
+        <!-- common-redis(Sa-Token会话存储依赖Redis) -->
+        <dependency>
+            <groupId>com.shop</groupId>
+            <artifactId>common-redis</artifactId>
+        </dependency>
+
+        <!-- Sa-Token 权限框架 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Sa-Token 整合 Redis -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

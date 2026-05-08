@@ -1,0 +1,98 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: shop-gateway
+  profiles:
+    active: dev
+
+  # ==================== Nacos配置 ====================
+  cloud:
+    nacos:
+      # 服务发现
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:124.223.32.169:8848}
+        namespace: ${nacos.config.namespace}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+      # 配置中心
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:124.223.32.169:8848}
+        namespace: ${nacos.config.namespace}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yaml
+        refresh-enabled: true  # 开启自动刷新
+
+
+  # ==================== Redis配置 ====================
+  redis:
+    host: ${REDIS_HOST:124.223.32.169}
+    port: 6379
+    password: ${REDIS_PASSWORD:ShopRedis@2026!}
+    database: 0
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+
+# ==================== Sa-Token配置 ====================
+sa-token:
+  token-name: Authorization
+  timeout: 2592000
+  activity-timeout: 86400
+  is-concurrent: true
+  token-style: uuid
+  is-read-header: true
+  is-read-cookie: false
+  token-prefix: Bearer
+
+# ==================== 日志配置 ====================
+logging:
+  level:
+    com.shop.gateway: debug
+    org.springframework.cloud.gateway: info
+
+# ==================== Actuator监控配置 ====================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    gateway:
+      enabled: true
+    health:
+      show-details: always
+
+# -------- dev 环境（本地开发）--------
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+nacos:
+  config:
+    namespace: b9c38ab4-538b-4708-968c-631138d4f1bd
+
+# -------- prod 环境（Docker）--------
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+        namespace: 7ab5a957-ed98-411a-8deb-ab0b84dde607
+      config:
+        server-addr: nacos:8848
+        namespace: 7ab5a957-ed98-411a-8deb-ab0b84dde607
+  redis:
+    host: redis
+
+# -------- 指定默认 nacos namespace（dev）--------
+nacos:
+  config:
+    namespace: b9c38ab4-538b-4708-968c-631138d4f1bd

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.shop</groupId>
+        <artifactId>shop-common</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>common-oss</artifactId>
+    <name>common-oss</name>
+    <description>公共对象存储模块 - 阿里云OSS/MinIO配置、上传工具</description>
+
+    <dependencies>
+        <!-- common-core -->
+        <dependency>
+            <groupId>com.shop</groupId>
+            <artifactId>common-core</artifactId>
+        </dependency>
+
+        <!-- Spring Web (提供MultipartFile等文件上传API) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Cloud Context (支持@RefreshScope动态刷新配置) -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-context</artifactId>
+        </dependency>
+
+        <!-- 阿里云OSS -->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+        </dependency>
+
+        <!-- MinIO -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

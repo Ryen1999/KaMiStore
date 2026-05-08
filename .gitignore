@@ -1,12 +1,54 @@
-# 项目排除路径
-/shop-auth/target/
-/shop-common/common-core/target/
-/shop-common/common-mq/target/
-/shop-common/common-mybatis/target/
-/shop-common/common-oss/target/
-/shop-common/common-redis/target/
-/shop-common/common-security/target/
-/shop-gateway/target/
-/shop-kami/target/
-/shop-merchant/target/
-/shop-product/target/
+# ==================== Maven ====================
+**/target/
+**/*.class
+**/*.jar
+**/*.war
+**/*.ear
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ==================== IDEA ====================
+.idea/
+*.iml
+*.iws
+*.ipr
+/out/
+
+# ==================== Eclipse ====================
+.classpath
+.project
+.settings/
+bin/
+
+# ==================== VS Code ====================
+.vscode/
+
+# ==================== OS ====================
+.DS_Store
+Thumbs.db
+
+# ==================== Logs ====================
+*.log
+logs/
+
+# ==================== Environment ====================
+.env.local
+.env.*.local
+
+# ==================== Node ====================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+
+# ==================== Docker ====================
+*.tar
+mynginx.tar

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.shop</groupId>
+        <artifactId>shop-common</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>common-mybatis</artifactId>
+    <name>common-mybatis</name>
+    <description>公共MyBatis模块 - MyBatis-Plus配置、多租户拦截器、分页</description>
+
+    <dependencies>
+        <!-- common-core -->
+        <dependency>
+            <groupId>com.shop</groupId>
+            <artifactId>common-core</artifactId>
+        </dependency>
+
+        <!-- MyBatis-Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+
+        <!-- MySQL 驱动 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- Druid 连接池 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
