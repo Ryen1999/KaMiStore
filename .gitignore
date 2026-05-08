@@ -1,0 +1,12 @@
+# 项目排除路径
+/shop-auth/target/
+/shop-common/common-core/target/
+/shop-common/common-mq/target/
+/shop-common/common-mybatis/target/
+/shop-common/common-oss/target/
+/shop-common/common-redis/target/
+/shop-common/common-security/target/
+/shop-gateway/target/
+/shop-kami/target/
+/shop-merchant/target/
+/shop-product/target/
