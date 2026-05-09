@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
@@ -8,6 +8,12 @@ const routes = [
   {
     path: '/register',
     component: () => import('../views/Register.vue')
+  },
+  {
+    // 买家店铺页面 - 公开访问，不需要登录
+    path: '/shop/:shopCode',
+    component: () => import('../views/ShopPublic.vue'),
+    meta: { public: true }
   },
   {
     path: '/',
@@ -47,12 +53,18 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 
-/* 路由守卫：未登录跳转登录页 */
+/* 路由守卫：未登录跳转登录页，但公开页面除外 */
 router.beforeEach((to, from, next) => {
+  // 公开页面不需要登录
+  if (to.meta.public) {
+    next()
+    return
+  }
+  
   const token = localStorage.getItem('token')
   if (to.path !== '/login' && to.path !== '/register' && !token) {
     next('/login')

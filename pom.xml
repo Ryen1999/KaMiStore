@@ -215,6 +215,11 @@
                 <artifactId>common-oss</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.shop</groupId>
+                <artifactId>shop-product</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

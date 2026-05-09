@@ -3,6 +3,7 @@ package com.shop.auth.controller;
 import com.shop.auth.dto.LoginDTO;
 import com.shop.auth.dto.LoginVO;
 import com.shop.auth.dto.RegisterDTO;
+import com.shop.auth.dto.ChangePasswordDTO;
 import com.shop.auth.service.AuthService;
 import com.shop.common.core.result.R;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +69,12 @@ public class AuthController {
     @PostMapping("/logout")
     public R<Void> logout() {
         authService.logout();
+        return R.ok();
+    }
+
+    @PutMapping("/password")
+    public R<Void> changePassword(@RequestBody @Validated ChangePasswordDTO dto) {
+        authService.changeMerchantPassword(dto);
         return R.ok();
     }
 }

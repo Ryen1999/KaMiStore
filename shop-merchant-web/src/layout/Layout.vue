@@ -8,7 +8,7 @@
           <el-icon :size="22"><Shop /></el-icon>
         </div>
         <div>
-          <h2 class="brand-title">商户管理中心</h2>
+          <h2 class="brand-title">KmsStroe</h2>
           <p class="brand-sub">虚拟商品平台</p>
         </div>
       </div>

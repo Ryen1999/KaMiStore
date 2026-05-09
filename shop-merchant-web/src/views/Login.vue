@@ -1,8 +1,6 @@
 <template>
-  <!-- 登录页 -->
   <div class="auth-page">
     <main class="auth-container" :class="{ visible: mounted }">
-      <!-- 左侧品牌区 -->
       <section class="auth-brand">
         <div class="brand-top">
           <div class="brand-logo-row">
@@ -12,7 +10,7 @@
             <span class="brand-logo-text">商户管理平台</span>
           </div>
           <div class="brand-headline">
-            <h1>全自动虚拟商品<br/>分发平台</h1>
+            <h1>全自动虚拟商品<br />分发平台</h1>
             <p>为商户提供安全、稳定、高效的数字资产管理与自动化交易结算服务。</p>
           </div>
         </div>
@@ -34,7 +32,6 @@
         <div class="brand-decor-2"></div>
       </section>
 
-      <!-- 右侧表单区 -->
       <section class="auth-form-area">
         <div class="auth-form-inner">
           <header class="auth-header">
@@ -47,21 +44,24 @@
               <el-input v-model="form.username" placeholder="请输入用户名" size="large" :prefix-icon="User" />
             </el-form-item>
             <el-form-item prop="password">
-              <el-input v-model="form.password" placeholder="请输入密码" type="password" show-password size="large" :prefix-icon="Lock" />
+              <el-input
+                v-model="form.password"
+                placeholder="请输入密码"
+                type="password"
+                show-password
+                size="large"
+                :prefix-icon="Lock"
+              />
             </el-form-item>
-            <!-- 记住密码 & 忘记密码 -->
             <div class="field-row">
               <el-checkbox v-model="rememberMe" label="记住密码" />
               <a href="#" class="forgot-link">忘记密码？</a>
             </div>
-
-            <!-- 登录按钮 -->
-            <el-button type="primary" size="large" style="width:100%" :loading="loading" @click="handleLogin">
+            <el-button type="primary" size="large" style="width: 100%" :loading="loading" @click="handleLogin">
               {{ loading ? '登录中...' : '立即登录' }}
             </el-button>
           </el-form>
 
-          <!-- 底部注册入口 -->
           <footer class="auth-footer">
             还没有账号？ <router-link to="/register" class="register-link">立即注册</router-link>
           </footer>
@@ -72,37 +72,75 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, markRaw } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { login } from '../api/auth'
 import { ElMessage } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
+import { Lock, User, Wallet } from '@element-plus/icons-vue'
+import { login } from '../api/auth'
 
 const router = useRouter()
 const formRef = ref()
 const loading = ref(false)
 const mounted = ref(false)
-const rememberMe = ref(false)
 
-const form = reactive({ username: '', password: '' })
+function canUseStorage() {
+  try {
+    const key = '__remember_test__'
+    localStorage.setItem(key, '1')
+    localStorage.removeItem(key)
+    return true
+  } catch {
+    return false
+  }
+}
+
+const storageAvailable = canUseStorage()
+const savedUsername = storageAvailable ? localStorage.getItem('rememberedUsername') || '' : ''
+const savedPassword = storageAvailable ? localStorage.getItem('rememberedPassword') || '' : ''
+
+const form = reactive({
+  username: savedUsername,
+  password: savedPassword
+})
+
+const rememberMe = ref(Boolean(savedUsername && savedPassword))
+
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
-onMounted(() => { setTimeout(() => { mounted.value = true }, 100) })
+onMounted(() => {
+  setTimeout(() => {
+    mounted.value = true
+  }, 100)
+})
 
 const handleLogin = async () => {
   await formRef.value.validate()
   loading.value = true
   try {
     const res = await login({ username: form.username, password: form.password, userType: 'merchant' })
+
     localStorage.setItem('token', res.data.token)
     localStorage.setItem('username', res.data.username)
     localStorage.setItem('userId', res.data.userId)
     if (res.data.tenantId) {
       localStorage.setItem('tenantId', res.data.tenantId)
     }
+
+    if (storageAvailable) {
+      if (rememberMe.value) {
+        localStorage.setItem('rememberedUsername', form.username)
+        localStorage.setItem('rememberedPassword', form.password)
+      } else {
+        localStorage.removeItem('rememberedUsername')
+        localStorage.removeItem('rememberedPassword')
+      }
+    } else if (rememberMe.value) {
+      ElMessage.warning('当前浏览器不支持本地存储，记住密码不会生效')
+    }
+
     ElMessage.success('登录成功')
     router.push('/')
   } finally {
@@ -138,7 +176,6 @@ const handleLogin = async () => {
   transform: translateY(0);
 }
 
-/* 左侧品牌区 */
 .auth-brand {
   flex: 1;
   background: linear-gradient(135deg, #0041d8 0%, #2d5cf7 100%);
@@ -149,7 +186,10 @@ const handleLogin = async () => {
   position: relative;
   overflow: hidden;
 }
-.brand-top { position: relative; z-index: 2; }
+.brand-top {
+  position: relative;
+  z-index: 2;
+}
 .brand-logo-row {
   display: flex;
   align-items: center;
@@ -159,7 +199,7 @@ const handleLogin = async () => {
 .brand-logo-box {
   width: 40px;
   height: 40px;
-  background: white;
+  background: #fff;
   border-radius: var(--radius);
   display: flex;
   align-items: center;
@@ -169,12 +209,12 @@ const handleLogin = async () => {
 .brand-logo-text {
   font-size: 20px;
   font-weight: 700;
-  color: white;
+  color: #fff;
 }
 .brand-headline h1 {
   font-size: 32px;
   font-weight: 700;
-  color: white;
+  color: #fff;
   line-height: 1.3;
   margin-bottom: 16px;
 }
@@ -190,11 +230,14 @@ const handleLogin = async () => {
   display: flex;
   gap: 40px;
 }
-.brand-stat { display: flex; flex-direction: column; }
+.brand-stat {
+  display: flex;
+  flex-direction: column;
+}
 .stat-num {
   font-size: 18px;
   font-weight: 700;
-  color: white;
+  color: #fff;
 }
 .stat-label {
   font-size: 12px;
@@ -223,7 +266,6 @@ const handleLogin = async () => {
   filter: blur(40px);
 }
 
-/* 右侧表单区 */
 .auth-form-area {
   flex: 1;
   padding: 48px 56px;
@@ -261,7 +303,9 @@ const handleLogin = async () => {
   color: var(--primary);
   text-decoration: none;
 }
-.forgot-link:hover { text-decoration: underline; }
+.forgot-link:hover {
+  text-decoration: underline;
+}
 
 .auth-footer {
   margin-top: 28px;
@@ -274,5 +318,7 @@ const handleLogin = async () => {
   font-weight: 600;
   text-decoration: none;
 }
-.register-link:hover { text-decoration: underline; }
+.register-link:hover {
+  text-decoration: underline;
+}
 </style>

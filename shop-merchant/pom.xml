@@ -12,58 +12,59 @@
 
     <artifactId>shop-merchant</artifactId>
     <name>shop-merchant</name>
-    <description>商户服务 - 店铺配置、商户角色管理</description>
+    <description>商户服务</description>
 
     <dependencies>
-        <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 公共安全模块(Sa-Token + Redis) -->
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>common-security</artifactId>
         </dependency>
 
-        <!-- 公共MyBatis模块(数据库访问) -->
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>common-mybatis</artifactId>
         </dependency>
 
-        <!-- 公共OSS模块(文件上传) -->
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>common-oss</artifactId>
         </dependency>
 
-        <!-- Nacos 服务发现 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
-        <!-- Nacos 配置中心 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
-        <!-- bootstrap.yml支持 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
-        <!-- 连接池(Redis) -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-        <!-- Knife4j接口文档 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>

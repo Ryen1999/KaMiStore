@@ -34,3 +34,8 @@ export function updateRole(id, data) {
 export function deleteRole(id) {
   return request.delete('/merchant/role/' + id)
 }
+
+/** 获取支付方式列表 */
+export function listPaymentMethods() {
+  return request.get('/store/payment-methods')
+}

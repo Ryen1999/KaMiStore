@@ -35,6 +35,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         "/auth/**",
                         // C端公开接口（无需登录）
                         "/store/**",
+                        "/public/**",
                         // 接口文档
                         "/doc.html",
                         "/webjars/**",

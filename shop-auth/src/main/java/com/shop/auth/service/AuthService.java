@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.shop.auth.dto.LoginDTO;
 import com.shop.auth.dto.LoginVO;
 import com.shop.auth.dto.RegisterDTO;
+import com.shop.auth.dto.ChangePasswordDTO;
 import com.shop.auth.entity.Admin;
 import com.shop.auth.entity.MerchantUser;
 import com.shop.auth.entity.Tenant;
@@ -199,6 +200,40 @@ public class AuthService {
      */
     public void logout() {
         StpUtil.logout();
+    }
+
+    public void changeMerchantPassword(ChangePasswordDTO dto) {
+        String loginId = StpUtil.getLoginIdAsString();
+        if (loginId == null || !loginId.startsWith(CommonConstant.USER_TYPE_MERCHANT + ":")) {
+            throw new BizException("未登录或登录态无效");
+        }
+        if (dto.getOldPassword() == null || dto.getOldPassword().isEmpty()) {
+            throw new BizException("旧密码不能为空");
+        }
+        if (dto.getNewPassword() == null || dto.getNewPassword().length() < 6) {
+            throw new BizException("新密码不能少于6位");
+        }
+
+        Long userId;
+        try {
+            userId = Long.parseLong(loginId.substring((CommonConstant.USER_TYPE_MERCHANT + ":").length()));
+        } catch (Exception e) {
+            throw new BizException("登录态无效");
+        }
+
+        MerchantUser user = merchantUserMapper.selectById(userId);
+        if (user == null) {
+            throw new BizException("用户不存在");
+        }
+        if (!BCrypt.checkpw(dto.getOldPassword(), user.getPassword())) {
+            throw new BizException("旧密码错误");
+        }
+        if (BCrypt.checkpw(dto.getNewPassword(), user.getPassword())) {
+            throw new BizException("新密码不能与旧密码相同");
+        }
+
+        user.setPassword(BCrypt.hashpw(dto.getNewPassword(), BCrypt.gensalt()));
+        merchantUserMapper.updateById(user);
     }
 
     /**

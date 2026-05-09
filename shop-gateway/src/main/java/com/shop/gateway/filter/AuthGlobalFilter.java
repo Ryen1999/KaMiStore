@@ -51,6 +51,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
      */
     private static final List<String> WHITE_LIST = Arrays.asList(
             "/api/auth/",           // 登录/注册接口
+            "/api/public/",         // C端公开接口（店铺信息、订单查询）
+            "/api/product/",        // 商品公开查询接口
             "/api/store/",          // C端公开接口
             "/doc.html",            // Knife4j接口文档
             "/webjars/",            // 静态资源
