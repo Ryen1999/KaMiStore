@@ -117,6 +117,17 @@ public class StoreConfigService {
         );
     }
 
+    public StoreConfig getByTenantId(Long tenantId) {
+        if (tenantId == null) {
+            return null;
+        }
+        return storeConfigMapper.selectOne(
+                new LambdaQueryWrapper<StoreConfig>()
+                        .eq(StoreConfig::getTenantId, tenantId)
+                        .last("LIMIT 1")
+        );
+    }
+
     /**
      * 更新店铺配置
      *

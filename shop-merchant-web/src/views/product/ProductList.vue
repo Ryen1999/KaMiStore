@@ -96,9 +96,9 @@
         <el-table-column label="库存状态" width="130" align="center">
           <template #default="{ row }">
             <div class="stock-cell">
-              <span class="stock-num" :class="{ warn: row.totalStock <= 5 }">{{ row.totalStock }}</span>
+              <span class="stock-num" :class="{ warn: getStock(row) <= 5 }">{{ getStock(row) }}</span>
               <div class="stock-bar">
-                <div class="stock-fill" :style="{ width: Math.min((row.totalStock / (row.totalStock + row.totalSales || 1)) * 100, 100) + '%' }"></div>
+                <div class="stock-fill" :style="{ width: getStockRate(row) + '%' }"></div>
               </div>
             </div>
           </template>
@@ -150,6 +150,14 @@ const categories = ref([])
 const selectedIds = ref([])
 const allSelected = ref(false)
 const query = reactive({ productName: '', categoryId: null, status: null, pageNum: 1, pageSize: 10 })
+
+const getStock = row => Number(row?.totalStock || 0)
+const getStockRate = row => {
+  const stock = getStock(row)
+  const sales = Number(row?.totalSales || 0)
+  const total = stock + sales
+  return total > 0 ? Math.min((stock / total) * 100, 100) : 0
+}
 
 const fetchList = async () => {
   loading.value = true

@@ -7,6 +7,7 @@ import com.shop.merchant.entity.PaymentMethod;
 import com.shop.merchant.mapper.PaymentMethodMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,46 +15,46 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 支付方式服务
- * <p>
- * 提供支付方式的管理功能：列表查询、状态切换、配置更新。
- * 系统初始化时自动创建默认支付方式。
- * </p>
- *
- * @author shop
- * @since 1.0.0
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentMethodService {
 
-    /** 支付方式Mapper */
     private final PaymentMethodMapper paymentMethodMapper;
 
-    /**
-     * 系统初始化时创建默认支付方式
-     */
     @PostConstruct
     public void initDefaultMethods() {
-        Long tenantId = 1001L; // 默认租户ID
-        
-        // 检查是否已存在所有默认支付方式（通过检查其中一个来判断）
+        Long tenantId = 1001L;
+        for (PaymentMethod method : buildDefaultMethods(tenantId)) {
+            initDefaultMethodIfAbsent(method);
+        }
+    }
+
+    private void initDefaultMethodIfAbsent(PaymentMethod method) {
         LambdaQueryWrapper<PaymentMethod> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(PaymentMethod::getTenantId, tenantId);
-        wrapper.eq(PaymentMethod::getMethodCode, "alipay_scan");
+        wrapper.eq(PaymentMethod::getTenantId, method.getTenantId());
+        wrapper.eq(PaymentMethod::getMethodCode, method.getMethodCode());
+
         PaymentMethod existing = paymentMethodMapper.selectOne(wrapper);
-        
         if (existing != null) {
-            log.info("租户 {} 已存在支付方式配置（{}），跳过初始化", tenantId, existing.getMethodName());
+            log.info("default payment method already exists, tenantId={}, methodCode={}",
+                    method.getTenantId(), method.getMethodCode());
             return;
         }
 
-        log.info("开始初始化默认支付方式...");
+        try {
+            paymentMethodMapper.insert(method);
+            log.info("default payment method initialized, tenantId={}, methodCode={}",
+                    method.getTenantId(), method.getMethodCode());
+        } catch (DuplicateKeyException e) {
+            log.info("default payment method initialized by another startup, tenantId={}, methodCode={}",
+                    method.getTenantId(), method.getMethodCode());
+        }
+    }
+
+    private List<PaymentMethod> buildDefaultMethods(Long tenantId) {
         List<PaymentMethod> defaultMethods = new ArrayList<>();
-        
-        // 支付宝扫码
+
         PaymentMethod alipayScan = new PaymentMethod();
         alipayScan.setTenantId(tenantId);
         alipayScan.setMethodCode("alipay_scan");
@@ -61,13 +62,12 @@ public class PaymentMethodService {
         alipayScan.setIcon("Monitor");
         alipayScan.setIconBg("rgba(0, 65, 216, 0.08)");
         alipayScan.setIconColor("var(--primary)");
-        alipayScan.setDescription("通过支付宝二维码收款，支持移动端和桌面POS终端。");
+        alipayScan.setDescription("通过支付宝二维码收款，支持移动端和桌面终端。");
         alipayScan.setFeeRate("0.60");
         alipayScan.setDailyLimit(50);
         alipayScan.setEnabled(true);
         defaultMethods.add(alipayScan);
 
-        // 支付宝H5
         PaymentMethod alipayH5 = new PaymentMethod();
         alipayH5.setTenantId(tenantId);
         alipayH5.setMethodCode("alipay_h5");
@@ -81,7 +81,6 @@ public class PaymentMethodService {
         alipayH5.setEnabled(true);
         defaultMethods.add(alipayH5);
 
-        // 微信支付
         PaymentMethod wechatPay = new PaymentMethod();
         wechatPay.setTenantId(tenantId);
         wechatPay.setMethodCode("wechat_pay");
@@ -95,15 +94,9 @@ public class PaymentMethodService {
         wechatPay.setEnabled(true);
         defaultMethods.add(wechatPay);
 
-        defaultMethods.forEach(paymentMethodMapper::insert);
-        log.info("默认支付方式初始化完成，共 {} 条", defaultMethods.size());
+        return defaultMethods;
     }
 
-    /**
-     * 获取支付方式列表
-     *
-     * @return 支付方式列表
-     */
     public List<PaymentMethod> listMethods() {
         LambdaQueryWrapper<PaymentMethod> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PaymentMethod::getTenantId, TenantContext.getTenantId());
@@ -111,40 +104,36 @@ public class PaymentMethodService {
         return paymentMethodMapper.selectList(wrapper);
     }
 
-    /**
-     * 更新支付方式状态
-     *
-     * @param methodCode 支付方式代码
-     * @param enabled    是否启用
-     */
+    public List<PaymentMethod> listEnabledMethodsByTenantId(Long tenantId) {
+        LambdaQueryWrapper<PaymentMethod> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PaymentMethod::getTenantId, tenantId);
+        wrapper.eq(PaymentMethod::getEnabled, true);
+        wrapper.orderByAsc(PaymentMethod::getCreatedAt);
+        return paymentMethodMapper.selectList(wrapper);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void updateStatus(String methodCode, Boolean enabled) {
         LambdaQueryWrapper<PaymentMethod> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PaymentMethod::getTenantId, TenantContext.getTenantId());
         wrapper.eq(PaymentMethod::getMethodCode, methodCode);
         PaymentMethod method = paymentMethodMapper.selectOne(wrapper);
-        
+
         if (method == null) {
             throw new BizException("支付方式不存在");
         }
 
         method.setEnabled(enabled);
         paymentMethodMapper.updateById(method);
-        log.info("更新支付方式状态成功, methodCode={}, enabled={}", methodCode, enabled);
+        log.info("payment method status updated, methodCode={}, enabled={}", methodCode, enabled);
     }
 
-    /**
-     * 获取支付方式配置
-     *
-     * @param methodCode 支付方式代码
-     * @return 支付方式实体
-     */
     public PaymentMethod getConfig(String methodCode) {
         LambdaQueryWrapper<PaymentMethod> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PaymentMethod::getTenantId, TenantContext.getTenantId());
         wrapper.eq(PaymentMethod::getMethodCode, methodCode);
         PaymentMethod method = paymentMethodMapper.selectOne(wrapper);
-        
+
         if (method == null) {
             throw new BizException("支付方式不存在");
         }
@@ -152,21 +141,13 @@ public class PaymentMethodService {
         return method;
     }
 
-    /**
-     * 更新支付方式配置
-     *
-     * @param methodCode 支付方式代码
-     * @param merchantId 商户号
-     * @param apiKey     API密钥
-     * @param privateKey 私钥
-     */
     @Transactional(rollbackFor = Exception.class)
     public void updateConfig(String methodCode, String merchantId, String apiKey, String privateKey) {
         LambdaQueryWrapper<PaymentMethod> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PaymentMethod::getTenantId, TenantContext.getTenantId());
         wrapper.eq(PaymentMethod::getMethodCode, methodCode);
         PaymentMethod method = paymentMethodMapper.selectOne(wrapper);
-        
+
         if (method == null) {
             throw new BizException("支付方式不存在");
         }
@@ -175,6 +156,6 @@ public class PaymentMethodService {
         method.setApiKey(apiKey);
         method.setPrivateKey(privateKey);
         paymentMethodMapper.updateById(method);
-        log.info("更新支付方式配置成功, methodCode={}", methodCode);
+        log.info("payment method config updated, methodCode={}", methodCode);
     }
 }

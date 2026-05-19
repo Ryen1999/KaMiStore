@@ -1,6 +1,7 @@
 package com.shop.common.core.result;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -93,7 +94,16 @@ public class R<T> implements Serializable {
      *
      * @return true-成功 false-失败
      */
+    @JsonIgnore
     public boolean isSuccess() {
         return this.code == SUCCESS_CODE;
+    }
+
+    /**
+     * 兼容历史响应中的success字段。
+     * <p>旧版本会把isSuccess()序列化成success，服务间Feign反序列化时需要接受该字段。</p>
+     */
+    public void setSuccess(Boolean success) {
+        // success由code计算，不单独存储。
     }
 }

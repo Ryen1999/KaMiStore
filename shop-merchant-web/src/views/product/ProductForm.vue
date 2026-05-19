@@ -66,7 +66,7 @@
         <div class="form-row-3">
           <div class="field-block">
             <label class="fb-label">库存数量</label>
-            <el-input v-model="skuList[0].stock" placeholder="0" />
+            <el-input :model-value="isEdit ? '保留现有库存' : '创建后通过添加库存导入'" disabled />
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ const form = reactive({
   productName: '', categoryId: null, productType: 2,
   mainImage: '', images: '', detailHtml: '', sortOrder: 0, isRecommend: 0
 })
-const skuList = ref([{ skuName: '', price: 0, originalPrice: 0, costPrice: 0, stock: 0 }])
+const skuList = ref([{ skuName: '', price: 0, originalPrice: 0, costPrice: 0 }])
 const rules = {
   productName: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
   categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }]
@@ -131,7 +131,7 @@ onMounted(async () => {
         sortOrder: p.sortOrder, isRecommend: p.isRecommend
       })
       if (p.skuList?.length) skuList.value = p.skuList.map(s => ({
-        skuName: s.skuName, price: s.price, originalPrice: s.originalPrice, costPrice: s.costPrice, stock: s.stock
+        skuName: s.skuName, price: s.price, originalPrice: s.originalPrice, costPrice: s.costPrice
       }))
     } finally { loading.value = false }
   }

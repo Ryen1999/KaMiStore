@@ -11,7 +11,6 @@ import com.shop.kami.dto.KamiImportDTO;
 import com.shop.kami.dto.KamiItemQueryDTO;
 import com.shop.kami.entity.KamiImportBatch;
 import com.shop.kami.entity.KamiItem;
-import com.shop.kami.feign.ProductFeignClient;
 import com.shop.kami.mapper.KamiImportBatchMapper;
 import com.shop.kami.mapper.KamiItemMapper;
 import com.shop.kami.util.KamiEncryptUtil;
@@ -48,9 +47,6 @@ public class KamiItemService {
 
     /** 卡密导入批次Mapper */
     private final KamiImportBatchMapper kamiImportBatchMapper;
-
-    /** 商品服务Feign客户端 */
-    private final ProductFeignClient productFeignClient;
 
     /** Redis模板（用于分布式锁） */
     private final StringRedisTemplate stringRedisTemplate;
@@ -215,15 +211,6 @@ public class KamiItemService {
             batch.setStatus(2);
         }
         kamiImportBatchMapper.updateById(batch);
-
-        // 4. 同步商品库存
-        if (successCount > 0) {
-            try {
-                productFeignClient.updateStock(productId, successCount);
-            } catch (Exception e) {
-                log.warn("同步商品库存失败, productId={}, error={}", productId, e.getMessage());
-            }
-        }
 
         log.info("卡密导入完成, productId={}, batchId={}, success={}, fail={}",
                 productId, batch.getId(), successCount, failCount);

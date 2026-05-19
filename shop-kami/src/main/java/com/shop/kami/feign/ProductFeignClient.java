@@ -3,6 +3,7 @@ package com.shop.kami.feign;
 import com.shop.common.core.result.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -29,5 +30,7 @@ public interface ProductFeignClient {
      * @return 操作结果
      */
     @PutMapping("/stock")
-    R<Void> updateStock(@RequestParam("productId") Long productId, @RequestParam("delta") Integer delta);
+    R<Void> updateStock(@RequestHeader("X-Tenant-Id") Long tenantId,
+                        @RequestParam("productId") Long productId,
+                        @RequestParam("delta") Integer delta);
 }

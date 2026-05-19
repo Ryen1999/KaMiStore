@@ -10,9 +10,24 @@ export function pageMessages(params) {
   return request.get('/system/message/page', { params })
 }
 
+/** 未读站内消息数量 */
+export function getUnreadMessageCount() {
+  return request.get('/system/message/unread-count')
+}
+
 /** 全部已读 */
 export function readAllMessages() {
   return request.put('/system/message/read-all')
+}
+
+/** 更新单条消息读取状态 */
+export function updateMessageReadStatus(id, isRead) {
+  return request.put(`/system/message/${id}/read-status`, null, { params: { isRead } })
+}
+
+/** 删除站内消息 */
+export function deleteMessage(id) {
+  return request.delete(`/system/message/${id}`)
 }
 
 /** 修改密码 */

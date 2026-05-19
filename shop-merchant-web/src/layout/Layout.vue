@@ -100,6 +100,10 @@
         <!-- 系统管理 -->
         <div class="nav-group-divider"></div>
         <div class="nav-group-section">系统管理</div>
+        <router-link to="/system/message" class="nav-item" :class="{ active: $route.path === '/system/message' }">
+          <el-icon><Bell /></el-icon>
+          <span>站内消息</span>
+        </router-link>
         <router-link to="/system/login-log" class="nav-item" :class="{ active: $route.path === '/system/login-log' }">
           <el-icon><Clock /></el-icon>
           <span>登录日志</span>
@@ -143,7 +147,7 @@
                 <el-button link type="primary" size="small" @click="handleReadAll">全部已读</el-button>
               </div>
               <div class="notify-list" v-if="messages.length">
-                <div class="notify-item" v-for="msg in messages" :key="msg.id" :class="{ unread: !msg.isRead }">
+                <div class="notify-item" v-for="msg in messages" :key="msg.id" :class="{ unread: !msg.isRead }" @click="goMessagePage">
                   <div class="notify-dot" v-if="!msg.isRead"></div>
                   <div class="notify-body">
                     <p class="notify-text">{{ msg.title }}</p>
@@ -152,6 +156,7 @@
                 </div>
               </div>
               <div class="notify-empty" v-else>暂无通知</div>
+              <el-button class="notify-more" link type="primary" @click="goMessagePage">查看全部消息</el-button>
             </div>
           </el-popover>
 
@@ -185,10 +190,10 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { logout } from '../api/auth'
-import { pageMessages, readAllMessages } from '../api/system'
+import { getUnreadMessageCount, pageMessages, readAllMessages } from '../api/system'
 
 const router = useRouter()
 const route = useRoute()
@@ -208,9 +213,12 @@ const messages = ref([])
 const unreadCount = ref(0)
 const fetchMessages = async () => {
   try {
-    const res = await pageMessages({ pageNum: 1, pageSize: 5 })
-    messages.value = res.data?.list || []
-    unreadCount.value = messages.value.filter(m => !m.isRead).length
+    const [messageRes, countRes] = await Promise.all([
+      pageMessages({ pageNum: 1, pageSize: 5 }),
+      getUnreadMessageCount()
+    ])
+    messages.value = messageRes.data?.list || []
+    unreadCount.value = countRes.data || 0
   } catch (e) {
     messages.value = []
     unreadCount.value = 0
@@ -218,10 +226,19 @@ const fetchMessages = async () => {
 }
 const handleReadAll = async () => {
   try { await readAllMessages() } catch (e) { /* ignore */ }
-  messages.value.forEach(m => m.isRead = 1)
-  unreadCount.value = 0
+  await fetchMessages()
+  window.dispatchEvent(new Event('shop-message-updated'))
 }
-onMounted(fetchMessages)
+const goMessagePage = () => {
+  router.push('/system/message')
+}
+onMounted(() => {
+  fetchMessages()
+  window.addEventListener('shop-message-updated', fetchMessages)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('shop-message-updated', fetchMessages)
+})
 
 /* 头像下拉命令 */
 const handleAvatarCmd = (cmd) => {
@@ -461,13 +478,15 @@ const handleLogout = async () => {
 .notify-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(226,232,240,0.6); margin-bottom: 8px; }
 .notify-title { font-size: 14px; font-weight: 700; }
 .notify-list { display: flex; flex-direction: column; gap: 4px; }
-.notify-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border-radius: 6px; }
+.notify-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border-radius: 6px; cursor: pointer; }
+.notify-item:hover { background: var(--surface-container-low); }
 .notify-item.unread { background: rgba(0,65,216,0.04); }
 .notify-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); margin-top: 6px; flex-shrink: 0; }
 .notify-body { flex: 1; }
 .notify-text { font-size: 13px; color: var(--on-surface); line-height: 1.4; }
 .notify-time { font-size: 11px; color: var(--outline); }
 .notify-empty { text-align: center; padding: 24px; font-size: 13px; color: var(--outline); }
+.notify-more { width: 100%; margin-top: 8px; justify-content: center; }
 
 .user-avatar {
   width: 32px;

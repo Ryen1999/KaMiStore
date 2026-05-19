@@ -28,6 +28,9 @@ public class SettlementConfig extends BaseEntity {
     /** 收款类型：system-系统默认, manual-手工提现, auto-自动提现 */
     private String collectionType;
 
+    /** 平台抽成比例（0~1），如0.1000表示抽成10% */
+    private java.math.BigDecimal platformCommissionRate;
+
     /** 支付宝账号 */
     private String alipayAccount;
 

@@ -8,53 +8,62 @@ import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * 订单实体
- *
- * @author shop
- * @since 1.0.0
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_order")
 public class Order extends BaseEntity {
 
-    /** 订单编号 */
     private String orderNo;
 
-    /** 买家ID */
+    private Long tenantId;
+
+    private Long productId;
+
+    private String productName;
+
+    private Long skuId;
+
+    private String skuName;
+
+    private Integer quantity;
+
     private Long buyerId;
 
-    /** 订单类型 1实物 2卡密 */
     private Integer orderType;
 
-    /** 联系方式类型 */
     private Integer contactType;
 
-    /** 联系方式 */
     private String contactValue;
 
-    /** 商品总额 */
     private BigDecimal totalAmount;
 
-    /** 优惠金额 */
     private BigDecimal discountAmount;
 
-    /** 实付金额 */
     private BigDecimal payAmount;
 
-    /** 支付方式 1微信 2支付宝 */
+    private BigDecimal platformCommissionAmount;
+
+    private BigDecimal merchantSettleAmount;
+
     private Integer payMethod;
 
-    /** 支付流水号 */
     private String payTradeNo;
 
-    /** 支付时间 */
     private LocalDateTime payTime;
 
-    /** 状态 0待付款 1已付款 2已发货 3已完成 4已取消 */
     private Integer status;
 
-    /** 发货时间 */
     private LocalDateTime deliverTime;
+
+    /** 结算状态：0待结算，1已结算，2结算失败 */
+    private Integer settleStatus;
+
+    /** 结算时间 */
+    private LocalDateTime settleTime;
+
+    /** 结算转账流水号 */
+    private String settleTradeNo;
+
+    /** 结算失败原因 */
+    private String settleFailReason;
 }

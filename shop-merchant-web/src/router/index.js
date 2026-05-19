@@ -16,6 +16,18 @@ const routes = [
     meta: { public: true }
   },
   {
+    // 支付宝扫码支付页面
+    path: '/shop/pay/:orderNo',
+    component: () => import('../views/ShopPayment.vue'),
+    meta: { public: true }
+  },
+  {
+    // 支付结果 / 卡密查看页面
+    path: '/shop/pay-result/:orderNo',
+    component: () => import('../views/ShopPayResult.vue'),
+    meta: { public: true }
+  },
+  {
     path: '/',
     component: () => import('../layout/Layout.vue'),
     redirect: '/dashboard',
@@ -46,6 +58,7 @@ const routes = [
       { path: 'settlement/list', component: () => import('../views/settlement/WithdrawalList.vue'), meta: { title: '提现列表' } },
 
       /* 系统管理 */
+      { path: 'system/message', component: () => import('../views/system/MessageList.vue'), meta: { title: '站内消息' } },
       { path: 'system/login-log', component: () => import('../views/system/LoginLog.vue'), meta: { title: '登录日志' } },
       { path: 'system/settings', component: () => import('../views/system/ChangePassword.vue'), meta: { title: '修改密码' } }
     ]

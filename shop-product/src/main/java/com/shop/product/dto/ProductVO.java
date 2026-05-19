@@ -1,6 +1,8 @@
 package com.shop.product.dto;
 
 import com.shop.product.entity.ProductSku;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -24,12 +26,15 @@ public class ProductVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** 主键ID */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /** 租户ID */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long tenantId;
 
     /** 分类ID */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long categoryId;
 
     /** 商品名称 */
